@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Menores Principales</title>
+    <style>
+        /* Reset y configuración de pantalla completa sin scroll */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { 
+            width: 100%; 
+            height: 100vh; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f0f4f8; 
+            display: flex; 
+            flex-direction: column; 
+            color: #333; 
+        }
+
+        /* Encabezado */
+        header { 
+            background-color: #1a365d; 
+            color: white; 
+            text-align: center; 
+            padding: 2vh; 
+            flex-shrink: 0; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            z-index: 10; 
+        }
+        header h1 { font-size: 3vh; margin-bottom: 0.5vh; }
+        header p { font-size: 1.8vh; color: #cbd5e0; }
+
+        /* Contenedor Principal (Uso eficiente del espacio en pantalla) */
+        .main-container { 
+            display: flex; 
+            flex: 1; 
+            padding: 2vh 2vw; 
+            gap: 2vw; 
+            align-items: stretch; 
+            justify-content: center; 
+        }
+
+        /* Panel Izquierdo: Controles */
+        .controls-panel { 
+            flex: 1; 
+            background: white; 
+            border-radius: 12px; 
+            padding: 2vh 2vw; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.2vh; 
+        }
+        .controls-panel h2 { 
+            font-size: 2.2vh; 
+            color: #2d3748; 
+            border-bottom: 2px solid #edf2f7; 
+            padding-bottom: 1vh; 
+            margin-bottom: 0.5vh; 
+            margin-top: 1vh;
+        }
+        .controls-panel h2:first-child { margin-top: 0; }
+        
+        button { 
+            background: #edf2f7; 
+            border: 2px solid transparent; 
+            padding: 1.5vh 1vw; 
+            border-radius: 8px; 
+            font-size: 1.8vh; 
+            cursor: pointer; 
+            text-align: left; 
+            transition: all 0.2s ease; 
+            color: #4a5568; 
+            font-weight: 600; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        button:hover { background: #e2e8f0; transform: translateX(4px); }
+        button.active { 
+            background: #ebf8ff; 
+            border-color: #3182ce; 
+            color: #2b6cb0; 
+            transform: translateX(8px); 
+            box-shadow: -2px 2px 5px rgba(0,0,0,0.05); 
+        }
+
+        /* Panel Derecho: Visualización */
+        .visualization-panel { 
+            flex: 1.5; 
+            background: white; 
+            border-radius: 12px; 
+            padding: 3vh 3vw; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        /* Diseño de la Matriz */
+        .matrix-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-bottom: 5vh; 
+        }
+        .bracket { 
+            font-size: 25vh; 
+            font-weight: 300; 
+            color: #2d3748; 
+            line-height: 0.7; 
+        }
+        .matrix { 
+            display: grid; 
+            grid-template-columns: repeat(3, 9vh); 
+            grid-template-rows: repeat(3, 9vh); 
+            gap: 1.5vh; 
+            margin: 0 2vw; 
+        }
+        
+        .cell { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 3.5vh; 
+            font-weight: bold; 
+            background: #f7fafc; 
+            border-radius: 8px; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            color: #718096; 
+            border: 1px solid #e2e8f0; 
+        }
+        .cell.active { 
+            background: #3182ce; 
+            color: white; 
+            transform: scale(1.15); 
+            box-shadow: 0 8px 15px rgba(49, 130, 206, 0.3); 
+            border-color: #3182ce; 
+            z-index: 5; 
+        }
+        .cell.dimmed { 
+            opacity: 0.15; 
+            filter: grayscale(100%); 
+        }
+
+        /* Panel de Fórmula / Resultado */
+        .result-panel { 
+            width: 100%; 
+            background: #f0f4f8; 
+            padding: 3vh; 
+            border-radius: 8px; 
+            text-align: center; 
+            border: 2px dashed #cbd5e0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 18vh; 
+            transition: all 0.3s; 
+        }
+        .result-panel.active-result { border-color: #3182ce; background: #ebf8ff; }
+        .formula-text { font-size: 3vh; color: #2d3748; font-family: monospace; font-weight: bold; margin-bottom: 1.5vh; }
+        .explanation-text { font-size: 2vh; color: #4a5568; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Visualizador de Menores Principales</h1>
+        <p>Haz clic en los botones para ver qué submatriz se extrae de la Hessiana en cada caso.</p>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="controls-panel">
+            <h2>Orden 1 (1x1)</h2>
+            <button onclick="selectMinor([0], [0], '|H_1,1| = 1 > 0', 'Intersección de la Fila 1 y la Columna 1.', this)">
+                <span>Menor H<sub>1,1</sub></span> <span>(1)</span>
+            </button>
+            <button onclick="selectMinor([1], [1], '|H_2,2| = 4 > 0', 'Intersección de la Fila 2 y la Columna 2.', this)">
+                <span>Menor H<sub>2,2</sub></span> <span>(4)</span>
+            </button>
+            <button onclick="selectMinor([2], [2], '|H_3,3| = 1 > 0', 'Intersección de la Fila 3 y la Columna 3.', this)">
+                <span>Menor H<sub>3,3</sub></span> <span>(1)</span>
+            </button>
+
+            <h2>Orden 2 (2x2)</h2>
+            <button onclick="selectMinor([0,1], [0,1], '|H_1,2| = (1 × 4) - (2 × 2) = 0', 'Cruza las Filas 1 y 2 con las Columnas 1 y 2.', this)">
+                <span>Menor H<sub>1,2</sub></span> <span>(0)</span>
+            </button>
+            <button onclick="selectMinor([0,2], [0,2], '|H_1,3| = (1 × 1) - (2 × 2) = -3 < 0', 'Tacha la fila y columna del medio. Une las cuatro esquinas.', this)">
+                <span>Menor H<sub>1,3</sub></span> <span>(-3)</span>
+            </button>
+            <button onclick="selectMinor([1,2], [1,2], '|H_2,3| = (4 × 1) - (4 × 4) = -12 < 0', 'Tacha la fila y columna 1. Queda el cuadrante inferior derecho.', this)">
+                <span>Menor H<sub>2,3</sub></span> <span>(-12)</span>
+            </button>
+
+            <h2>Orden 3 (3x3)</h2>
+            <button onclick="selectMinor([0,1,2], [0,1,2], '|H_1,2,3| = 0', 'El determinante de toda la matriz completa sin recortar nada.', this)">
+                <span>Menor H<sub>1,2,3</sub></span> <span>(0)</span>
+            </button>
+        </div>
+
+        <div class="visualization-panel">
+            <div class="matrix-container">
+                <div class="bracket">(</div>
+                <div class="matrix" id="matrix-grid">
+                    </div>
+                <div class="bracket">)</div>
+            </div>
+
+            <div class="result-panel" id="result-box">
+                <div class="formula-text" id="formula-display">Esperando selección...</div>
+                <div class="explanation-text" id="explanation-display">Selecciona un menor a la izquierda para iluminar la cuadrícula.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // La matriz extraída de la imagen del ejercicio
+        const matrixData = [
+            [1, 2, 2],
+            [2, 4, 4],
+            [2, 4, 1]
+        ];
+
+        const matrixGrid = document.getElementById('matrix-grid');
+        const formulaDisplay = document.getElementById('formula-display');
+        const explanationDisplay = document.getElementById('explanation-display');
+        const resultBox = document.getElementById('result-box');
+
+        // Construir el DOM de la matriz dinámicamente
+        function initMatrix() {
+            matrixGrid.innerHTML = '';
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${r}-${c}`;
+                    cell.textContent = matrixData[r][c];
+                    matrixGrid.appendChild(cell);
+                }
+            }
+        }
+
+        // Lógica de resaltado al hacer clic
+        function selectMinor(rows, cols, formulaText, explanationText, btnElement) {
+            // Quitar clase activa de todos los botones y ponérsela al clickeado
+            document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Actualizar textos
+            resultBox.classList.add('active-result');
+            formulaDisplay.innerHTML = formulaText;
+            explanationDisplay.innerHTML = explanationText;
+
+            // Recorrer la cuadrícula 3x3
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    
+                    // La regla de oro del menor principal: si la fila y la columna 
+                    // coinciden con los arrays pedidos, la celda se activa.
+                    if (rows.includes(r) && cols.includes(c)) {
+                        cell.classList.add('active');
+                        cell.classList.remove('dimmed');
+                    } else {
+                        cell.classList.remove('active');
+                        cell.classList.add('dimmed');
+                    }
+                }
+            }
+        }
+
+        // Inicializar la app
+        window.onload = initMatrix;
+    </script>
+</body>
+</html>
