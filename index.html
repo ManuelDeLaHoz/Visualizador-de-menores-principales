@@ -39,6 +39,7 @@
             gap: 2vw; 
             align-items: stretch; 
             justify-content: center; 
+            min-height: 0; /* Para evitar desbordamientos */
         }
 
         /* Panel Izquierdo: Controles */
@@ -54,21 +55,22 @@
             overflow-y: auto;
         }
         .controls-panel h2 { 
-            font-size: 2vh; 
+            font-size: 1.8vh; 
             color: #2d3748; 
             border-bottom: 2px solid #edf2f7; 
             padding-bottom: 0.5vh; 
             margin-bottom: 0.5vh; 
             margin-top: 1vh;
+            text-transform: uppercase;
         }
         .controls-panel h2:first-child { margin-top: 0; }
         
         button { 
             background: #edf2f7; 
             border: 2px solid transparent; 
-            padding: 1.2vh 1vw; 
+            padding: 1vh 1vw; 
             border-radius: 8px; 
-            font-size: 1.7vh; 
+            font-size: 1.6vh; 
             cursor: pointer; 
             text-align: left; 
             transition: all 0.2s ease; 
@@ -86,6 +88,26 @@
             transform: translateX(8px); 
             box-shadow: -2px 2px 5px rgba(0,0,0,0.05); 
         }
+
+        /* Botones del Generador Automático */
+        .generator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8vh;
+            margin-bottom: 0.5vh;
+        }
+        .generator-grid button {
+            justify-content: center;
+            text-align: center;
+            padding: 1vh;
+            background: #e2e8f0;
+            font-size: 1.4vh;
+        }
+        .generator-grid button:hover { transform: translateY(-2px); background: #cbd5e0; }
+        .generator-grid .full-width { grid-column: span 2; background: #fed7e2; color: #97266d; }
+        .generator-grid .full-width:hover { background: #fbb6ce; }
+        .btn-pos { color: #22543d; }
+        .btn-neg { color: #742a2a; }
 
         /* Etiquetas de color en botones según el signo */
         .val-badge { padding: 0.2vh 0.8vw; border-radius: 4px; color: white; min-width: 4vw; text-align: center; }
@@ -112,7 +134,7 @@
             padding: 2vh;
             border-radius: 8px;
             text-align: center;
-            font-size: 2.2vh;
+            font-size: 2vh;
             font-weight: bold;
             margin-bottom: 2vh;
             transition: all 0.3s;
@@ -130,23 +152,23 @@
             flex: 1;
         }
         .bracket { 
-            font-size: 28vh; 
+            font-size: 25vh; 
             font-weight: 300; 
             color: #2d3748; 
             line-height: 0.5; 
         }
         .matrix { 
             display: grid; 
-            grid-template-columns: repeat(3, 9vh); 
-            grid-template-rows: repeat(3, 9vh); 
-            gap: 1.5vh; 
+            grid-template-columns: repeat(3, 8vh); 
+            grid-template-rows: repeat(3, 8vh); 
+            gap: 1.2vh; 
             margin: 0 2vw; 
         }
         
         .cell-input { 
             width: 100%; 
             height: 100%; 
-            font-size: 3.5vh; 
+            font-size: 3vh; 
             font-weight: bold; 
             text-align: center;
             background: #f7fafc; 
@@ -168,7 +190,7 @@
         .result-panel { 
             width: 100%; 
             background: #f0f4f8; 
-            padding: 3vh; 
+            padding: 2vh; 
             border-radius: 8px; 
             text-align: center; 
             border: 2px dashed #cbd5e0; 
@@ -176,25 +198,41 @@
             flex-direction: column; 
             justify-content: center; 
             align-items: center; 
-            min-height: 15vh; 
+            min-height: 12vh; 
             transition: all 0.3s; 
         }
         .result-panel.active-result { border-color: #3182ce; background: #ebf8ff; }
-        .formula-text { font-size: 2.8vh; color: #2d3748; font-family: monospace; font-weight: bold; margin-bottom: 1vh; }
-        .explanation-text { font-size: 1.8vh; color: #4a5568; }
+        .formula-text { font-size: 2.2vh; color: #2d3748; font-family: monospace; font-weight: bold; margin-bottom: 1vh; }
+        .explanation-text { font-size: 1.6vh; color: #4a5568; }
 
+        /* Para pantallas ligeramente más pequeñas */
+        @media (max-height: 800px) {
+            .bracket { font-size: 20vh; }
+            .matrix { grid-template-columns: repeat(3, 7vh); grid-template-rows: repeat(3, 7vh); }
+            .cell-input { font-size: 2.5vh; }
+        }
     </style>
 </head>
 <body>
 
     <header>
         <h1>Análisis de la Matriz Hessiana</h1>
-        <p>Modifica los valores para calcular la clasificación en tiempo real. Selecciona un menor para ver su desarrollo.</p>
+        <p>Modifica los valores o usa el generador automático para ver las distintas clasificaciones en tiempo real.</p>
     </header>
 
     <div class="main-container">
         
         <div class="controls-panel">
+            
+            <h2>Generador Automático</h2>
+            <div class="generator-grid">
+                <button class="btn-pos" onclick="generateMatrix('PD')">Definida Positiva</button>
+                <button class="btn-pos" onclick="generateMatrix('PSD')">Semidef. Positiva</button>
+                <button class="btn-neg" onclick="generateMatrix('ND')">Definida Negativa</button>
+                <button class="btn-neg" onclick="generateMatrix('NSD')">Semidef. Negativa</button>
+                <button class="full-width" onclick="generateMatrix('IND')">🎲 Generar Indefinida</button>
+            </div>
+
             <h2>Orden 1 (1x1)</h2>
             <button id="btn-1-1" onclick="selectMinor('1_1')">
                 <span>Menor H<sub>1,1</sub></span> <span id="val-1-1" class="val-badge bg-zero">0</span>
@@ -247,7 +285,7 @@
 
             <div class="result-panel" id="result-box">
                 <div class="formula-text" id="formula-display">Esperando selección...</div>
-                <div class="explanation-text" id="explanation-display">Haz clic en un botón de la izquierda para ver el desarrollo.</div>
+                <div class="explanation-text" id="explanation-display">Haz clic en un botón de la izquierda para ver el desarrollo de ese menor.</div>
             </div>
         </div>
 
@@ -257,7 +295,7 @@
         let currentMinor = null;
         const inputs = document.querySelectorAll('.cell-input');
 
-        // Función para leer la matriz actual de los inputs
+        // Función para leer la matriz actual
         function getMatrix() {
             return [
                 [parseFloat(document.getElementById('m00').value) || 0, parseFloat(document.getElementById('m01').value) || 0, parseFloat(document.getElementById('m02').value) || 0],
@@ -273,11 +311,97 @@
                    m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
                    m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
         }
-
         function getSignClass(val) {
             if (val > 0) return 'bg-pos';
             if (val < 0) return 'bg-neg';
             return 'bg-zero';
+        }
+        function randInt(min, max) { 
+            return Math.floor(Math.random() * (max - min + 1)) + min; 
+        }
+
+        // --- MOTOR DEL GENERADOR AUTOMÁTICO ---
+        function generateMatrix(targetType) {
+            let m = [[0,0,0],[0,0,0],[0,0,0]];
+            let valid = false;
+            let attempts = 0;
+            
+            // Buscar hasta encontrar la configuración solicitada
+            while(!valid && attempts < 1000) {
+                attempts++;
+                
+                // Para las semidefinidas, forzamos un rango máximo de 2 usando el producto B * B^T
+                if(targetType === 'PSD' || targetType === 'NSD') {
+                    let B = [
+                        [randInt(-2, 2), randInt(-2, 2)],
+                        [randInt(-2, 2), randInt(-2, 2)],
+                        [randInt(-2, 2), randInt(-2, 2)]
+                    ];
+                    let sign = targetType === 'PSD' ? 1 : -1;
+                    for(let i=0; i<3; i++){
+                        for(let j=0; j<3; j++){
+                            m[i][j] = sign * (B[i][0]*B[j][0] + B[i][1]*B[j][1]);
+                        }
+                    }
+                } 
+                // Para las definidas e indefinidas, usamos matrices simétricas aleatorias controladas
+                else {
+                    for(let i=0; i<3; i++){
+                        for(let j=i; j<3; j++){
+                            let val = randInt(-4, 4);
+                            if(targetType === 'PD' && i===j) val = randInt(2, 6); // Diagonal fuerte positiva
+                            if(targetType === 'ND' && i===j) val = randInt(-6, -2); // Diagonal fuerte negativa
+                            m[i][j] = val;
+                            m[j][i] = val;
+                        }
+                    }
+                }
+                
+                // Comprobación estricta de las reglas de Sylvester
+                const pm1 = [m[0][0], m[1][1], m[2][2]];
+                const pm2 = [
+                    getDet2x2(m[0][0], m[0][1], m[1][0], m[1][1]),
+                    getDet2x2(m[0][0], m[0][2], m[2][0], m[2][2]),
+                    getDet2x2(m[1][1], m[1][2], m[2][1], m[2][2])
+                ];
+                const pm3 = [getDet3x3(m)];
+                const all = [...pm1, ...pm2, ...pm3];
+
+                if(targetType === 'PD') {
+                    valid = all.every(x => x > 0);
+                } else if(targetType === 'PSD') {
+                    // Todos >= 0 y al menos uno de ellos es estrictamente 0, y que no sea todo ceros absolutos
+                    valid = all.every(x => x >= 0) && all.includes(0) && all.some(x => x !== 0);
+                } else if(targetType === 'ND') {
+                    valid = pm1.every(x => x < 0) && pm2.every(x => x > 0) && pm3.every(x => x < 0);
+                } else if(targetType === 'NSD') {
+                    valid = pm1.every(x => x <= 0) && pm2.every(x => x >= 0) && pm3.every(x => x <= 0) && all.includes(0) && all.some(x => x !== 0);
+                } else if(targetType === 'IND') {
+                    const isPD = all.every(x => x > 0);
+                    const isPSD = all.every(x => x >= 0);
+                    const isND = pm1.every(x => x < 0) && pm2.every(x => x > 0) && pm3.every(x => x < 0);
+                    const isNSD = pm1.every(x => x <= 0) && pm2.every(x => x >= 0) && pm3.every(x => x <= 0);
+                    valid = !isPD && !isPSD && !isND && !isNSD && all.some(x => x !== 0);
+                }
+            }
+
+            // Inyectar a los inputs
+            for(let r=0; r<3; r++){
+                for(let c=0; c<3; c++){
+                    document.getElementById(`m${r}${c}`).value = m[r][c];
+                }
+            }
+            
+            // Reiniciar la selección visual de menores y actualizar cálculos
+            currentMinor = null;
+            document.querySelectorAll('.controls-panel > button').forEach(btn => btn.classList.remove('active'));
+            updateAll();
+            
+            // Mostrar mensaje amigable en la caja de resultados
+            const resultBox = document.getElementById('result-box');
+            resultBox.classList.remove('active-result');
+            document.getElementById('formula-display').textContent = "¡Matriz Generada!";
+            document.getElementById('explanation-display').textContent = "Selecciona un menor de la izquierda para analizar esta nueva matriz.";
         }
 
         function updateAll() {
@@ -297,8 +421,10 @@
             // Actualizar botones y badges
             for (let key in minors) {
                 const el = document.getElementById(`val-${key.replace(/_/g, '-')}`);
-                el.textContent = minors[key].val;
-                el.className = `val-badge ${getSignClass(minors[key].val)}`;
+                if(el) {
+                    el.textContent = minors[key].val;
+                    el.className = `val-badge ${getSignClass(minors[key].val)}`;
+                }
             }
 
             // Lógica de Clasificación
@@ -329,13 +455,21 @@
             // Re-renderizar la vista de la matriz si hay un menor seleccionado
             if (currentMinor) {
                 renderMatrixView(minors[currentMinor]);
+            } else {
+                // Si no hay menor, limpiar visualmente la matriz
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 3; c++) {
+                        document.getElementById(`m${r}${c}`).className = 'cell-input';
+                    }
+                }
             }
         }
 
         function selectMinor(type) {
             currentMinor = type;
-            document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${type.replace(/_/g, '-')}`).classList.add('active');
+            document.querySelectorAll('.controls-panel > button').forEach(btn => btn.classList.remove('active')); // Ignorar los del generador
+            const targetBtn = document.getElementById(`btn-${type.replace(/_/g, '-')}`);
+            if(targetBtn) targetBtn.classList.add('active');
             updateAll(); // Forzamos actualización para repintar
         }
 
@@ -364,8 +498,17 @@
             }
         }
 
-        // Listeners para los inputs
-        inputs.forEach(input => input.addEventListener('input', updateAll));
+        // Listeners para los inputs manuales
+        inputs.forEach(input => input.addEventListener('input', () => {
+            currentMinor = null; // Reiniciar vista al editar a mano
+            document.querySelectorAll('.controls-panel > button').forEach(btn => btn.classList.remove('active'));
+            updateAll();
+            
+            const resultBox = document.getElementById('result-box');
+            resultBox.classList.remove('active-result');
+            document.getElementById('formula-display').textContent = "Matriz modificada";
+            document.getElementById('explanation-display').textContent = "Selecciona un menor de la izquierda para ver su nuevo resultado.";
+        }));
         
         // Ejecución inicial
         updateAll();
