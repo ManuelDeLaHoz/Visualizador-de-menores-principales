@@ -23,15 +23,15 @@
             background-color: #1a365d; 
             color: white; 
             text-align: center; 
-            padding: 2vh; 
+            padding: 1.5vh; 
             flex-shrink: 0; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
             z-index: 10; 
         }
-        header h1 { font-size: 3vh; margin-bottom: 0.5vh; }
-        header p { font-size: 1.8vh; color: #cbd5e0; }
+        header h1 { font-size: 2.8vh; margin-bottom: 0.5vh; }
+        header p { font-size: 1.6vh; color: #cbd5e0; }
 
-        /* Contenedor Principal (Uso eficiente del espacio en pantalla) */
+        /* Contenedor Principal */
         .main-container { 
             display: flex; 
             flex: 1; 
@@ -50,13 +50,14 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
             display: flex; 
             flex-direction: column; 
-            gap: 1.2vh; 
+            gap: 1vh; 
+            overflow-y: auto;
         }
         .controls-panel h2 { 
-            font-size: 2.2vh; 
+            font-size: 2vh; 
             color: #2d3748; 
             border-bottom: 2px solid #edf2f7; 
-            padding-bottom: 1vh; 
+            padding-bottom: 0.5vh; 
             margin-bottom: 0.5vh; 
             margin-top: 1vh;
         }
@@ -65,9 +66,9 @@
         button { 
             background: #edf2f7; 
             border: 2px solid transparent; 
-            padding: 1.5vh 1vw; 
+            padding: 1.2vh 1vw; 
             border-radius: 8px; 
-            font-size: 1.8vh; 
+            font-size: 1.7vh; 
             cursor: pointer; 
             text-align: left; 
             transition: all 0.2s ease; 
@@ -86,31 +87,53 @@
             box-shadow: -2px 2px 5px rgba(0,0,0,0.05); 
         }
 
+        /* Etiquetas de color en botones según el signo */
+        .val-badge { padding: 0.2vh 0.8vw; border-radius: 4px; color: white; min-width: 4vw; text-align: center; }
+        .bg-pos { background-color: #48bb78; }
+        .bg-neg { background-color: #f56565; }
+        .bg-zero { background-color: #a0aec0; }
+
         /* Panel Derecho: Visualización */
         .visualization-panel { 
             flex: 1.5; 
             background: white; 
             border-radius: 12px; 
-            padding: 3vh 3vw; 
+            padding: 2vh 3vw; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: center; 
+            justify-content: space-between; 
         }
+
+        /* Banner de Clasificación */
+        .classification-banner {
+            width: 100%;
+            padding: 2vh;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 2.2vh;
+            font-weight: bold;
+            margin-bottom: 2vh;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .class-pd { background: #f0fff4; color: #22543d; border-color: #68d391; }
+        .class-nd { background: #fff5f5; color: #742a2a; border-color: #fc8181; }
+        .class-indef { background: #fffaf0; color: #7b341e; border-color: #f6ad55; }
 
         /* Diseño de la Matriz */
         .matrix-container { 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            margin-bottom: 5vh; 
+            flex: 1;
         }
         .bracket { 
-            font-size: 25vh; 
+            font-size: 28vh; 
             font-weight: 300; 
             color: #2d3748; 
-            line-height: 0.7; 
+            line-height: 0.5; 
         }
         .matrix { 
             display: grid; 
@@ -120,30 +143,26 @@
             margin: 0 2vw; 
         }
         
-        .cell { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+        .cell-input { 
+            width: 100%; 
+            height: 100%; 
             font-size: 3.5vh; 
             font-weight: bold; 
+            text-align: center;
             background: #f7fafc; 
             border-radius: 8px; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            color: #718096; 
-            border: 1px solid #e2e8f0; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            color: #2d3748; 
+            border: 2px solid #e2e8f0; 
+            outline: none;
         }
-        .cell.active { 
-            background: #3182ce; 
-            color: white; 
-            transform: scale(1.15); 
-            box-shadow: 0 8px 15px rgba(49, 130, 206, 0.3); 
-            border-color: #3182ce; 
-            z-index: 5; 
-        }
-        .cell.dimmed { 
-            opacity: 0.15; 
-            filter: grayscale(100%); 
-        }
+        .cell-input:focus { border-color: #3182ce; background: white; }
+        
+        /* Colores dinámicos en las celdas de la matriz */
+        .cell-input.active-pos { background: #c6f6d5; color: #22543d; border-color: #48bb78; transform: scale(1.1); z-index: 5; box-shadow: 0 8px 15px rgba(72, 187, 120, 0.3); }
+        .cell-input.active-neg { background: #fed7d7; color: #742a2a; border-color: #f56565; transform: scale(1.1); z-index: 5; box-shadow: 0 8px 15px rgba(245, 101, 101, 0.3); }
+        .cell-input.active-zero { background: #edf2f7; color: #4a5568; border-color: #a0aec0; transform: scale(1.1); z-index: 5; box-shadow: 0 8px 15px rgba(160, 174, 192, 0.3); }
+        .cell-input.dimmed { opacity: 0.2; filter: grayscale(100%); }
 
         /* Panel de Fórmula / Resultado */
         .result-panel { 
@@ -157,127 +176,199 @@
             flex-direction: column; 
             justify-content: center; 
             align-items: center; 
-            min-height: 18vh; 
+            min-height: 15vh; 
             transition: all 0.3s; 
         }
         .result-panel.active-result { border-color: #3182ce; background: #ebf8ff; }
-        .formula-text { font-size: 3vh; color: #2d3748; font-family: monospace; font-weight: bold; margin-bottom: 1.5vh; }
-        .explanation-text { font-size: 2vh; color: #4a5568; }
+        .formula-text { font-size: 2.8vh; color: #2d3748; font-family: monospace; font-weight: bold; margin-bottom: 1vh; }
+        .explanation-text { font-size: 1.8vh; color: #4a5568; }
 
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Visualizador de Menores Principales</h1>
-        <p>Haz clic en los botones para ver qué submatriz se extrae de la Hessiana en cada caso.</p>
+        <h1>Análisis de la Matriz Hessiana</h1>
+        <p>Modifica los valores para calcular la clasificación en tiempo real. Selecciona un menor para ver su desarrollo.</p>
     </header>
 
     <div class="main-container">
         
         <div class="controls-panel">
             <h2>Orden 1 (1x1)</h2>
-            <button onclick="selectMinor([0], [0], '|H_1,1| = 1 > 0', 'Intersección de la Fila 1 y la Columna 1.', this)">
-                <span>Menor H<sub>1,1</sub></span> <span>(1)</span>
+            <button id="btn-1-1" onclick="selectMinor('1_1')">
+                <span>Menor H<sub>1,1</sub></span> <span id="val-1-1" class="val-badge bg-zero">0</span>
             </button>
-            <button onclick="selectMinor([1], [1], '|H_2,2| = 4 > 0', 'Intersección de la Fila 2 y la Columna 2.', this)">
-                <span>Menor H<sub>2,2</sub></span> <span>(4)</span>
+            <button id="btn-2-2" onclick="selectMinor('2_2')">
+                <span>Menor H<sub>2,2</sub></span> <span id="val-2-2" class="val-badge bg-zero">0</span>
             </button>
-            <button onclick="selectMinor([2], [2], '|H_3,3| = 1 > 0', 'Intersección de la Fila 3 y la Columna 3.', this)">
-                <span>Menor H<sub>3,3</sub></span> <span>(1)</span>
+            <button id="btn-3-3" onclick="selectMinor('3_3')">
+                <span>Menor H<sub>3,3</sub></span> <span id="val-3-3" class="val-badge bg-zero">0</span>
             </button>
 
             <h2>Orden 2 (2x2)</h2>
-            <button onclick="selectMinor([0,1], [0,1], '|H_1,2| = (1 × 4) - (2 × 2) = 0', 'Cruza las Filas 1 y 2 con las Columnas 1 y 2.', this)">
-                <span>Menor H<sub>1,2</sub></span> <span>(0)</span>
+            <button id="btn-1-2" onclick="selectMinor('1_2')">
+                <span>Menor H<sub>1,2</sub></span> <span id="val-1-2" class="val-badge bg-zero">0</span>
             </button>
-            <button onclick="selectMinor([0,2], [0,2], '|H_1,3| = (1 × 1) - (2 × 2) = -3 < 0', 'Tacha la fila y columna del medio. Une las cuatro esquinas.', this)">
-                <span>Menor H<sub>1,3</sub></span> <span>(-3)</span>
+            <button id="btn-1-3" onclick="selectMinor('1_3')">
+                <span>Menor H<sub>1,3</sub></span> <span id="val-1-3" class="val-badge bg-zero">0</span>
             </button>
-            <button onclick="selectMinor([1,2], [1,2], '|H_2,3| = (4 × 1) - (4 × 4) = -12 < 0', 'Tacha la fila y columna 1. Queda el cuadrante inferior derecho.', this)">
-                <span>Menor H<sub>2,3</sub></span> <span>(-12)</span>
+            <button id="btn-2-3" onclick="selectMinor('2_3')">
+                <span>Menor H<sub>2,3</sub></span> <span id="val-2-3" class="val-badge bg-zero">0</span>
             </button>
 
             <h2>Orden 3 (3x3)</h2>
-            <button onclick="selectMinor([0,1,2], [0,1,2], '|H_1,2,3| = 0', 'El determinante de toda la matriz completa sin recortar nada.', this)">
-                <span>Menor H<sub>1,2,3</sub></span> <span>(0)</span>
+            <button id="btn-1-2-3" onclick="selectMinor('1_2_3')">
+                <span>Menor H<sub>1,2,3</sub></span> <span id="val-1-2-3" class="val-badge bg-zero">0</span>
             </button>
         </div>
 
         <div class="visualization-panel">
+            
+            <div id="classification-banner" class="classification-banner class-indef">
+                Calculando...
+            </div>
+
             <div class="matrix-container">
                 <div class="bracket">(</div>
                 <div class="matrix" id="matrix-grid">
-                    </div>
+                    <input type="number" id="m00" class="cell-input" value="1">
+                    <input type="number" id="m01" class="cell-input" value="2">
+                    <input type="number" id="m02" class="cell-input" value="2">
+                    <input type="number" id="m10" class="cell-input" value="2">
+                    <input type="number" id="m11" class="cell-input" value="4">
+                    <input type="number" id="m12" class="cell-input" value="4">
+                    <input type="number" id="m20" class="cell-input" value="2">
+                    <input type="number" id="m21" class="cell-input" value="4">
+                    <input type="number" id="m22" class="cell-input" value="1">
+                </div>
                 <div class="bracket">)</div>
             </div>
 
             <div class="result-panel" id="result-box">
                 <div class="formula-text" id="formula-display">Esperando selección...</div>
-                <div class="explanation-text" id="explanation-display">Selecciona un menor a la izquierda para iluminar la cuadrícula.</div>
+                <div class="explanation-text" id="explanation-display">Haz clic en un botón de la izquierda para ver el desarrollo.</div>
             </div>
         </div>
 
     </div>
 
     <script>
-        // La matriz extraída de la imagen del ejercicio
-        const matrixData = [
-            [1, 2, 2],
-            [2, 4, 4],
-            [2, 4, 1]
-        ];
+        let currentMinor = null;
+        const inputs = document.querySelectorAll('.cell-input');
 
-        const matrixGrid = document.getElementById('matrix-grid');
-        const formulaDisplay = document.getElementById('formula-display');
-        const explanationDisplay = document.getElementById('explanation-display');
-        const resultBox = document.getElementById('result-box');
+        // Función para leer la matriz actual de los inputs
+        function getMatrix() {
+            return [
+                [parseFloat(document.getElementById('m00').value) || 0, parseFloat(document.getElementById('m01').value) || 0, parseFloat(document.getElementById('m02').value) || 0],
+                [parseFloat(document.getElementById('m10').value) || 0, parseFloat(document.getElementById('m11').value) || 0, parseFloat(document.getElementById('m12').value) || 0],
+                [parseFloat(document.getElementById('m20').value) || 0, parseFloat(document.getElementById('m21').value) || 0, parseFloat(document.getElementById('m22').value) || 0]
+            ];
+        }
 
-        // Construir el DOM de la matriz dinámicamente
-        function initMatrix() {
-            matrixGrid.innerHTML = '';
-            for (let r = 0; r < 3; r++) {
-                for (let c = 0; c < 3; c++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.id = `cell-${r}-${c}`;
-                    cell.textContent = matrixData[r][c];
-                    matrixGrid.appendChild(cell);
-                }
+        // Funciones matemáticas
+        function getDet2x2(a, b, c, d) { return (a * d) - (b * c); }
+        function getDet3x3(m) {
+            return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
+                   m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
+                   m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+        }
+
+        function getSignClass(val) {
+            if (val > 0) return 'bg-pos';
+            if (val < 0) return 'bg-neg';
+            return 'bg-zero';
+        }
+
+        function updateAll() {
+            const m = getMatrix();
+
+            // Calcular todos los menores
+            const minors = {
+                '1_1': { val: m[0][0], rows: [0], cols: [0], desc: 'Intersección de Fila 1 y Columna 1', form: `|H_1,1| = ${m[0][0]}` },
+                '2_2': { val: m[1][1], rows: [1], cols: [1], desc: 'Intersección de Fila 2 y Columna 2', form: `|H_2,2| = ${m[1][1]}` },
+                '3_3': { val: m[2][2], rows: [2], cols: [2], desc: 'Intersección de Fila 3 y Columna 3', form: `|H_3,3| = ${m[2][2]}` },
+                '1_2': { val: getDet2x2(m[0][0], m[0][1], m[1][0], m[1][1]), rows: [0,1], cols: [0,1], desc: 'Cruza Filas 1, 2 con Columnas 1, 2', form: `|H_1,2| = (${m[0][0]} × ${m[1][1]}) - (${m[0][1]} × ${m[1][0]}) = ${getDet2x2(m[0][0], m[0][1], m[1][0], m[1][1])}` },
+                '1_3': { val: getDet2x2(m[0][0], m[0][2], m[2][0], m[2][2]), rows: [0,2], cols: [0,2], desc: 'Une las cuatro esquinas (ignora fila y col central)', form: `|H_1,3| = (${m[0][0]} × ${m[2][2]}) - (${m[0][2]} × ${m[2][0]}) = ${getDet2x2(m[0][0], m[0][2], m[2][0], m[2][2])}` },
+                '2_3': { val: getDet2x2(m[1][1], m[1][2], m[2][1], m[2][2]), rows: [1,2], cols: [1,2], desc: 'Cuadrante inferior derecho', form: `|H_2,3| = (${m[1][1]} × ${m[2][2]}) - (${m[1][2]} × ${m[2][1]}) = ${getDet2x2(m[1][1], m[1][2], m[2][1], m[2][2])}` },
+                '1_2_3': { val: getDet3x3(m), rows: [0,1,2], cols: [0,1,2], desc: 'Determinante completo de la matriz', form: `|H_1,2,3| = ${m[0][0]}(${m[1][1]}×${m[2][2]} - ${m[1][2]}×${m[2][1]}) - ${m[0][1]}(...) + ${m[0][2]}(...) = ${getDet3x3(m)}` }
+            };
+
+            // Actualizar botones y badges
+            for (let key in minors) {
+                const el = document.getElementById(`val-${key.replace(/_/g, '-')}`);
+                el.textContent = minors[key].val;
+                el.className = `val-badge ${getSignClass(minors[key].val)}`;
+            }
+
+            // Lógica de Clasificación
+            const pm1 = [minors['1_1'].val, minors['2_2'].val, minors['3_3'].val];
+            const pm2 = [minors['1_2'].val, minors['1_3'].val, minors['2_3'].val];
+            const pm3 = [minors['1_2_3'].val];
+            const allPM = [...pm1, ...pm2, ...pm3];
+
+            const banner = document.getElementById('classification-banner');
+            
+            if (allPM.every(x => x > 0)) {
+                banner.textContent = "Hessiano: DEFINIDO POSITIVO (Función estrictamente convexa)";
+                banner.className = "classification-banner class-pd";
+            } else if (allPM.every(x => x >= 0)) {
+                banner.textContent = "Hessiano: SEMIDEFINIDO POSITIVO (Función convexa)";
+                banner.className = "classification-banner class-pd";
+            } else if (pm1.every(x => x < 0) && pm2.every(x => x > 0) && pm3.every(x => x < 0)) {
+                banner.textContent = "Hessiano: DEFINIDO NEGATIVO (Función estrictamente cóncava)";
+                banner.className = "classification-banner class-nd";
+            } else if (pm1.every(x => x <= 0) && pm2.every(x => x >= 0) && pm3.every(x => x <= 0)) {
+                banner.textContent = "Hessiano: SEMIDEFINIDO NEGATIVO (Función cóncava)";
+                banner.className = "classification-banner class-nd";
+            } else {
+                banner.textContent = "Hessiano: INDEFINIDO (Punto de silla, ni cóncava ni convexa)";
+                banner.className = "classification-banner class-indef";
+            }
+
+            // Re-renderizar la vista de la matriz si hay un menor seleccionado
+            if (currentMinor) {
+                renderMatrixView(minors[currentMinor]);
             }
         }
 
-        // Lógica de resaltado al hacer clic
-        function selectMinor(rows, cols, formulaText, explanationText, btnElement) {
-            // Quitar clase activa de todos los botones y ponérsela al clickeado
+        function selectMinor(type) {
+            currentMinor = type;
             document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
+            document.getElementById(`btn-${type.replace(/_/g, '-')}`).classList.add('active');
+            updateAll(); // Forzamos actualización para repintar
+        }
 
-            // Actualizar textos
+        function renderMatrixView(minorData) {
+            const resultBox = document.getElementById('result-box');
             resultBox.classList.add('active-result');
-            formulaDisplay.innerHTML = formulaText;
-            explanationDisplay.innerHTML = explanationText;
+            document.getElementById('formula-display').textContent = minorData.form;
+            document.getElementById('explanation-display').textContent = minorData.desc;
 
-            // Recorrer la cuadrícula 3x3
+            // Determinar color base del resultado
+            let activeClass = 'active-zero';
+            if (minorData.val > 0) activeClass = 'active-pos';
+            if (minorData.val < 0) activeClass = 'active-neg';
+
             for (let r = 0; r < 3; r++) {
                 for (let c = 0; c < 3; c++) {
-                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    const inputEl = document.getElementById(`m${r}${c}`);
+                    inputEl.className = 'cell-input'; // Reset
                     
-                    // La regla de oro del menor principal: si la fila y la columna 
-                    // coinciden con los arrays pedidos, la celda se activa.
-                    if (rows.includes(r) && cols.includes(c)) {
-                        cell.classList.add('active');
-                        cell.classList.remove('dimmed');
+                    if (minorData.rows.includes(r) && minorData.cols.includes(c)) {
+                        inputEl.classList.add(activeClass);
                     } else {
-                        cell.classList.remove('active');
-                        cell.classList.add('dimmed');
+                        inputEl.classList.add('dimmed');
                     }
                 }
             }
         }
 
-        // Inicializar la app
-        window.onload = initMatrix;
+        // Listeners para los inputs
+        inputs.forEach(input => input.addEventListener('input', updateAll));
+        
+        // Ejecución inicial
+        updateAll();
     </script>
 </body>
 </html>
